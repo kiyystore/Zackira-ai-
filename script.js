@@ -19,7 +19,7 @@ function handleAuth() {
         auth.signOut().then(() => alert("Berhasil Logout!"));
     } else {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => alert("Gagal login: " + err.message));
+        auth.signInWithRedirect(provider).catch(err => alert("Gagal login: " + err.message));
     }
 }
 

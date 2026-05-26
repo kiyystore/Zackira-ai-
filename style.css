@@ -1,0 +1,2423 @@
+:root {
+    /* Skema warna yang lebih modern & gelap */
+    --bg-color: #0f0f13;
+    --chat-bg: #141419;
+    --primary-color: #1e90ff;
+    --primary-hover: #00bfff;
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --copyright-text: #b3b9c4;
+    --bot-msg-bg: #202028;
+    --user-msg-bg: #1e90ff;
+    --sidebar-bg: #09090b;
+    --sidebar-width: 280px;
+    --border-color: #272730;
+    --disable-button: #9ca3af;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Roboto, Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* --- SIDEBAR & OVERLAY --- */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100%;
+    background-color: var(--sidebar-bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    transition: left 0.3s ease;
+    position: relative;
+    left: 0;
+}
+.sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 50px;
+    object-fit: cover;
+}
+
+.about-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+    outline: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.sidebar-title h2 {
+    margin: 0;
+
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
+.close-btn:hover {
+    color: var(--text-main);
+}
+
+/* Menu & Search */
+.sidebar-menu {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.menu-btn {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.menu-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.search-container {
+    display: none;
+    position: relative;
+    animation: fadeIn 0.2s ease-in-out;
+}
+.search-container input {
+    width: 100%;
+    padding: 10px 30px 10px 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: white;
+    outline: none;
+}
+.close-search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* Style untuk ikon baru di menu sidebar */
+.menu-icon {
+    width: 18px; /* Ukuran standar agar pas dengan teks */
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0; /* Mencegah ikon gepeng */
+    filter: brightness(0) invert(1); /* Mengubah warna ikon hitam menjadi putih agar matching */
+}
+
+/* Memastikan teks dan ikon sejajar di tengah */
+.menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Jarak antara ikon dan teks */
+    padding: 12px 15px;
+    /* ... sisa style menu-btn lainnya tetap sama ... */
+}
+
+/* History Items */
+.history-section {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 15px 15px;
+}
+.history-section h3 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 15px 0 10px;
+    letter-spacing: 1px;
+}
+
+.history-item-wrapper {
+    position: relative;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+.history-item {
+    flex: 1;
+    padding: 12px 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    transition: background 0.2s;
+}
+.history-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.delete-btn {
+    display: none;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+/* --- MAIN CHAT UI --- */
+.chat-container {
+    flex: 1;
+    height: 100%;
+    background-color: var(--chat-bg);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+    width: 100%;
+}
+
+header {
+    background-color: var(--bg-color);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border-color);
+    min-height: 65px;
+}
+.hamburger-btn {
+    position: absolute;
+    left: 20px;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.header-title {
+    text-align: center;
+}
+.header-title h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+.header-title span {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    background: linear-gradient(25deg, #e0e7ff, var(--primary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-title p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.chat-box {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden; /* TAMBAHAN: Mencegah layar utama bisa digeser ke samping */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px max(20px, calc(50% - 380px));
+    scroll-behavior: smooth;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.message {
+    max-width: 85%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    /* word-break dihapus agar tidak merusak tabel */
+    min-width: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.message.bot {
+    background-color: var(--bot-msg-bg);
+    align-self: flex-start;
+    border-top-left-radius: 4px;
+    border: 1px solid var(--border-color);
+    margin-left: 2px;
+}
+
+.message.user {
+    background-color: var(--user-msg-bg);
+    align-self: flex-end;
+    border-top-right-radius: 4px;
+    color: #fff;
+}
+.message.bot,
+.message.user {
+    overflow: visible;
+}
+.message.bot {
+    padding-left: 22px !important;
+}
+
+.message.user {
+    padding-left: 22px !important;
+}
+.message p:first-child {
+    margin-top: 0;
+}
+
+.input-area {
+    position: sticky;
+    bottom: 0;
+
+    width: 100%;
+
+    padding: 12px 14px calc(env(safe-area-inset-bottom) + 12px);
+
+    background: linear-gradient(
+        to top,
+        rgba(10, 10, 15, 0.98),
+        rgba(10, 10, 15, 0.88),
+        transparent
+    );
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    z-index: 50;
+}
+
+.input-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.input-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.left-actions {
+    display: flex;
+    align-items: center;
+}
+
+.right-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.input-area input {
+    flex: 1;
+    min-width: 0; /* PENTING: Mengizinkan input untuk mengecil di flexbox */
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: #000;
+    color: var(--text-main);
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.input-wrapper {
+    background: rgba(25, 25, 32, 0.96);
+
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
+    border-radius: 32px;
+
+    padding: 16px;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+/* =========================
+   FIX FOCUS EFFECT
+========================= */
+
+.input-wrapper:focus-within {
+    border-color: rgba(255, 255, 255, 0.06);
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    transform: none;
+}
+
+.input-area input:focus {
+    border-color: var(--primary-color);
+}
+.input-area button {
+    flex-shrink: 0; /* Mencegah tombol mengecil */
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.95rem;
+}
+.input-area button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* =========================
+   STYLE LOADING
+========================= */
+
+.loading-container {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+/* WRAPPER */
+.loading-orbit {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* CINCIN BERPUTAR */
+.orbit-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    border: 3px solid transparent;
+    border-top: 3px solid var(--primary-hover);
+    border-right: 3px solid var(--primary-color);
+
+    animation: orbitSpin 1s linear infinite;
+
+    box-shadow:
+        0 0 12px var(--text-muted),
+        0 0 20px var(--primary-hover);
+}
+
+/* LOGO TENGAH */
+.loading-logo {
+    width: 10px;
+    height: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    box-shadow: 0 0 12px rgba(79, 124, 255, 0.35);
+
+    animation: pulseLogo 1.6s ease-in-out infinite;
+}
+
+/* ANIMASI PUTAR */
+@keyframes orbitSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* EFEK NAFAS */
+@keyframes pulseLogo {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+}
+
+/* --- TOMBOL STOP RESPON --- */
+.stop-btn-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.stop-btn-wrapper .stop-square {
+    position: absolute;
+    width: 25px; /* Ukuran kotak stop di tengah */
+    height: 25px;
+    z-index: 2;
+    filter: brightness(0) invert(1); /* Opsional: Mengubah ikon kotak hitam jadi putih */
+    object-fit: contain;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- RESPONSIVE BREAKPOINTS (Mobile & Desktop) --- */
+/* MOBILE */
+@media (max-width: 768px) {
+    .input-wrapper {
+        border-radius: 28px;
+
+        padding: 14px;
+    }
+
+    .model-trigger {
+        padding: 0 16px;
+
+        font-size: 0.85rem;
+    }
+
+    .send-btn {
+        width: 48px !important;
+        height: 48px !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hamburger-btn {
+        display: none;
+    }
+    .close-btn {
+        display: none;
+    }
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+.code-wrapper {
+    background-color: #1e1e24;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid var(--border-color);
+    max-width: 100%;
+    width: 100%; /* KUNCI UTAMA 3: Memaksa wrapper mentok di batas balon chat */
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a2a35;
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: "Segoe UI", sans-serif;
+    text-transform: uppercase;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+    font-weight: bold;
+}
+
+.copy-btn:hover {
+    color: var(--text-muted);
+}
+
+.code-wrapper pre {
+    margin: 0;
+    padding: 15px;
+    background-color: transparent;
+    max-width: 100%;
+    width: 100%; /* KUNCI UTAMA 4 */
+    overflow-x: auto; /* Hanya isi kode ini yang bisa di-scroll ke samping */
+    box-sizing: border-box;
+}
+
+.code-wrapper code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+    color: #e5e5e5;
+}
+
+/* Style untuk inline code (kode pendek di tengah kalimat) */
+p code {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+}
+
+/* Merapikan jarak list (bullet) dari AI */
+.message ul,
+.message ol {
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* --- STYLE KHUSUS TABEL --- */
+.message table {
+    display: block; /* Membuat tabel memiliki jalurnya sendiri */
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; /* Mengaktifkan scroll ke samping HANYA untuk tabel */
+    border-collapse: collapse;
+    margin: 15px 0;
+    white-space: nowrap; /* KUNCI UTAMA: Mencegah teks turun ke bawah dan membuat kolom terlalu sempit */
+}
+
+.message table th,
+.message table td {
+    border: 1px solid var(--border-color);
+    padding: 12px 16px;
+    text-align: left;
+    word-break: normal; /* Mengembalikan sifat teks menjadi normal (tidak dipotong paksa) */
+}
+
+.message table th {
+    background-color: rgba(255, 255, 255, 0.08); /* Memberi warna beda untuk header (judul) tabel */
+    font-weight: 600;
+}
+
+/* Custom scrollbar khusus untuk tabel di dalam chat */
+.message table::-webkit-scrollbar {
+    height: 8px;
+}
+.message table::-webkit-scrollbar-thumb {
+    background: #52525b;
+    border-radius: 4px;
+}
+.message table::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+/* --- MODAL CUSTOM STYLE --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none; /* Sembunyi secara default */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background-color: var(--bot-msg-bg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content h3 {
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.modal-content p {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.modal-actions button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary-color);
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.modal-actions button:hover {
+    opacity: 0.8;
+}
+
+#userInput {
+    width: 100%;
+
+    background: transparent;
+
+    border: none;
+    outline: none;
+
+    resize: none;
+
+    min-height: 42px;
+    max-height: 180px;
+
+    color: white;
+
+    font-size: 1.05rem;
+    line-height: 1.5;
+
+    overflow-y: auto;
+}
+
+#userInput::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* --- CUSTOM SCROLLBAR UNTUK KOLOM INPUT CHAT --- */
+#userInput::-webkit-scrollbar {
+    width: 6px; /* Menjaga lebar scrollbar tetap konsisten dan ramping */
+}
+
+#userInput::-webkit-scrollbar-track {
+    background: transparent; /* Jalurnya transparan agar menyatu dengan background hitam kotak input */
+    margin: 8px 0; /* Memberikan jarak atas & bawah agar garis tidak mentok dengan border kotak */
+}
+
+#userInput::-webkit-scrollbar-thumb {
+    background: var(--border-color); /* Warna abu-abu gelap agar samar dan elegan */
+    border-radius: 10px; /* Ujung yang membulat (pill shape) */
+    /* Mencegah garis (thumb) mengecil hingga tak terlihat saat teks sangat panjang */
+    min-height: 20px;
+}
+
+#userInput::-webkit-scrollbar-thumb:hover {
+    background: var(
+        --primary-color
+    ); /* Menyala dengan warna aksen ungu/biru saat kursor diarahkan */
+}
+
+.input-area:has(#userInput:focus) #currentModelDisplay {
+    display: inline !important;
+}
+
+.input-area:has(#userInput:focus) .model-trigger {
+    min-width: 120px;
+    padding: 0 14px;
+    justify-content: center;
+}
+
+.input-area:has(#userInput:focus) .chevron-up {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    #modelSelect {
+        max-width: 100px; /* Lebih ramping di HP */
+        padding: 0 25px 0 10px;
+        font-size: 0.75rem;
+        background-position: right 8px center;
+    }
+}
+
+/* --- BOTTOM SHEET STYLE --- */
+.sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end;
+    z-index: 3000;
+    transition: opacity 0.3s ease;
+}
+
+.bottom-sheet {
+    width: 100%;
+    background-color: var(--bot-msg-bg);
+    border-top: 1px solid var(--primary-color);
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+
+    /* TAMBAHAN */
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -5px 25px rgba(99, 102, 241, 0.2);
+}
+
+.sheet-overlay.active {
+    display: flex;
+}
+.sheet-overlay.active .bottom-sheet {
+    transform: translateY(0);
+}
+
+.sheet-handle {
+    width: 50px;
+    height: 4px;
+    background: var(--copyright-text);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+}
+
+.sheet-header h2 {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    overscroll-behavior: contain;
+}
+
+/* Scrollbar khusus model */
+.sheet-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sheet-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+
+.sheet-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.model-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.model-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.model-option.active {
+    background: rgba(34, 32, 36);
+    border-color: var(--primary-hover);
+}
+
+.option-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.option-title {
+    font-weight: 600;
+    color: var(--text-main);
+}
+.option-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.checkmark {
+    display: none; /* Sembunyi secara default */
+    width: 22px; /* Sesuaikan ukuran gambar di sini */
+    height: 22px;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.checkmark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Memastikan gambar tidak gepeng */
+    /* Opsional: Jika gambar centang Anda berwarna hitam/putih dan ingin diubah warnanya via CSS */
+    /* filter: drop-shadow(0 0 2px var(--primary-color));*/
+}
+
+.model-option.active .checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Trigger Button Style */
+.model-trigger {
+    height: 48px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 999px;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.model-trigger span,
+#currentModelDisplay {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.model-trigger:active {
+    transform: scale(0.96);
+}
+
+.chevron-up img {
+    width: 13px;
+    height: 13px;
+    filter: brightness(0) invert(1);
+}
+
+.chevron-up.rotate {
+    transform: rotate(180deg);
+}
+
+/* --- SIDEBAR FOOTER (SOCIAL ICONS) --- */
+.sidebar-footer {
+    padding: 20px 15px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--sidebar-bg);
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-link {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.social-link img {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s;
+}
+
+/* Efek Hover */
+.social-link:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary-hover);
+    transform: translateY(-3px);
+}
+
+.social-link:hover img {
+    transform: scale(1.1);
+}
+
+.version-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+}
+
+.copyright-text {
+    margin: 2px 0;
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+    color: var(--copyright-text);
+}
+
+/* Gunakan .send-btn (titik) agar sesuai dengan class di HTML */
+.send-btn {
+    width: 52px !important;
+    height: 52px !important;
+
+    border-radius: 50% !important;
+
+    border: none;
+
+    background: var(--primary-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    box-shadow: none;
+}
+
+.send-btn:active {
+    transform: scale(0.93);
+}
+
+.send-btn:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+.send-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+/* Animasi putar untuk ikon loading */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Tampilan tombol saat sedang memproses (disabled) */
+.send-btn:disabled {
+    background-color: var(--disable-button) !important;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+/* Tampilan saat input dikunci (belum pilih model) */
+#userInput:disabled {
+    background-color: #1a1a1a;
+    color: var(--text-muted);
+    cursor: not-allowed;
+    border-color: #272730;
+    opacity: 0.7;
+}
+
+/* --- STYLE UNTUK MODEL YANG TERKUNCI --- */
+.model-option.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(239, 68, 68, 0.05); /* Latar kemerahan */
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.model-option.locked .option-title {
+    color: #ef4444; /* Teks merah */
+}
+
+.model-option.locked:hover {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* --- STYLE TAMBAHAN UNTUK DRAG & SWIPE --- */
+.bottom-sheet.dragging {
+    transition: none; /* Matikan animasi agar sheet mengikuti jari dengan mulus tanpa delay */
+}
+
+.sheet-handle {
+    cursor: grab; /* Ubah kursor menjadi ikon tangan di desktop */
+    touch-action: none; /* Mencegah layar ikut scroll saat garis disentuh di HP */
+}
+
+.sheet-handle:active {
+    cursor: grabbing; /* Ikon tangan menggenggam saat ditekan */
+}
+
+.stop-notice {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin: 8px 0 12px;
+    animation: fadeIn 0.2s ease;
+}
+
+/* =========================
+   INFO PANEL ANIMATION
+========================= */
+
+.info-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(20, 20, 25, 0.98), rgba(10, 10, 15, 0.98));
+
+    border-bottom: 1px solid var(--border-color);
+
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.35s ease;
+
+    z-index: 1200;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    padding: 18px;
+}
+
+.info-panel.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Garis pemisah header dan FAQ */
+.info-panel-header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+}
+
+.info-panel-header::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: linear-gradient(
+        90deg,
+        var(--primary-color),
+        var(--primary-hover),
+        var(--text-main)
+    );
+
+    opacity: 0.9;
+}
+
+.info-panel-header h3 {
+    font-size: 1.25rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    background: linear-gradient(90deg, var(--text-main), var(--text-main), var(--primary-color));
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+
+    position: relative;
+}
+
+.info-panel-header button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.info-panel-header button:hover {
+    color: var(--primary-hover);
+}
+
+.info-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
+    padding: 14px;
+    border-radius: 14px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    animation: infoFade 0.5s ease;
+}
+
+.info-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.status-online {
+    color: #4ade80;
+    font-weight: bold;
+}
+
+@keyframes infoFade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================
+   FAQ ACCORDION
+========================= */
+
+.faq-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 6px 0;
+}
+
+.faq-question {
+    width: 100%;
+    background: transparent;
+    border: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 0;
+
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.faq-question span {
+    text-align: left;
+}
+
+.faq-icon {
+    width: 18px;
+    height: 18px;
+
+    transition:
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.3s ease,
+        opacity 0.3s ease;
+
+    /* WARNA HIJAU SAAT TERTUTUP */
+    filter: brightness(0) saturate(100%) invert(73%) sepia(44%) saturate(640%) hue-rotate(76deg)
+        brightness(92%) contrast(90%);
+
+    opacity: 0.9;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+
+    /* WARNA MERAH SAAT DIBUKA */
+    filter: brightness(0) saturate(100%) invert(32%) sepia(93%) saturate(2320%) hue-rotate(338deg)
+        brightness(97%) contrast(104%);
+
+    opacity: 1;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.7;
+
+    opacity: 0;
+
+    transition:
+        max-height 0.45s ease,
+        opacity 0.3s ease,
+        padding 0.3s ease;
+
+    padding-right: 10px;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px;
+    opacity: 1;
+    padding-bottom: 16px;
+}
+
+/* Efek smooth saat dibuka */
+.faq-answer::before {
+    content: "";
+    display: block;
+    height: 6px;
+}
+
+/* =========================
+   ANDROID KEYBOARD FIX
+========================= */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.history-section {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 0 15px 220px;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-footer {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    padding: 20px 15px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    border-top: 1px solid var(--border-color);
+
+    background: var(--sidebar-bg);
+
+    will-change: transform, opacity;
+
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+
+    transition:
+        transform 120ms ease-out,
+        opacity 80ms linear;
+
+    z-index: 10;
+}
+
+/* Keyboard muncul */
+body.keyboard-open .sidebar-footer {
+    opacity: 0;
+
+    transform: translateY(140%);
+
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .sidebar {
+        position: fixed;
+
+        top: 0;
+        left: calc(-1 * var(--sidebar-width));
+
+        height: 100%;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+}
+
+/* 1. Matikan seleksi teks untuk semua elemen di website */
+* {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+/* 2. Pastikan kolom input dan textarea tetap bisa diketik dan diseleksi */
+input,
+textarea {
+    -webkit-user-select: auto !important;
+    -ms-user-select: auto !important;
+    user-select: auto !important;
+}
+
+/* 3. Class dinamis: Jangan beri text-select ke pembungkus agar padding tidak ikut terseleksi */
+.chat-selectable {
+    -webkit-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* HANYA terapkan text-select pada elemen konten (teks langsung) di dalam chat */
+.chat-selectable p,
+.chat-selectable span,
+.chat-selectable code,
+.chat-selectable pre,
+.chat-selectable li,
+.chat-selectable h1,
+.chat-selectable h2,
+.chat-selectable h3 {
+    -webkit-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Matikan seleksi pada placeholder untuk semua browser */
+input::placeholder,
+textarea::placeholder {
+    -webkit-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Tambahan: Pastikan area input tidak ikut terpilih saat mode seleksi chat aktif */
+input:not(:focus),
+textarea:not(:focus) {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Matikan seleksi global */
+* {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Kotak pesan tetap 'none' agar padding tidak ikut terseleksi */
+.chat-selectable {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* HANYA teks di dalam kotak pesan yang aktif yang bisa diseleksi */
+.chat-selectable p,
+.chat-selectable span,
+.chat-selectable code,
+.chat-selectable li {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+/* Input tetap harus bisa diketik */
+input,
+textarea {
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+}
+
+/* =========================
+   GLOBAL BUTTON EFFECT
+========================= */
+
+/* semua tombol */
+
+button {
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        filter 0.15s ease,
+        background 0.2s ease;
+
+    box-shadow: none !important;
+}
+
+/* glow hanya saat ditekan */
+
+button:active {
+    transform: scale(0.95);
+
+    box-shadow: 0 0 18px rgba(30, 144, 255, 0.45) !important;
+}
+
+/* hilangkan glow permanen */
+
+.send-btn,
+.model-trigger,
+.sidebar-toggle,
+.new-chat-btn,
+.model-option,
+.history-item {
+    box-shadow: none !important;
+}
+
+/* glow saat disentuh */
+
+.send-btn:active,
+.model-trigger:active,
+.sidebar-toggle:active,
+.new-chat-btn:active,
+.model-option:active,
+.history-item:active {
+    box-shadow: var(--primary-hover);
+}
+
+/* hilangkan outline biru browser */
+
+button:focus,
+button:focus-visible {
+    outline: none !important;
+
+    box-shadow: none !important;
+}
+
+/* =========================
+   PERSONA BUTTON
+========================= */
+
+.persona-btn {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50% !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.06) !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    flex-shrink: 0;
+
+    transition:
+        transform 0.18s ease,
+        background 0.25s ease;
+}
+
+.persona-btn img {
+    width: 20px;
+    height: 20px;
+
+    object-fit: contain;
+
+    filter: brightness(0) invert(1);
+
+    opacity: 0.92;
+}
+
+.persona-btn:active {
+    transform: scale(0.92);
+}
+
+/* =========================
+   PERSONA PANEL
+========================= */
+
+.persona-panel {
+    display: none;
+
+    position: fixed;
+
+    left: 50%;
+    bottom: 105px;
+
+    transform: translateX(-50%) translateY(35px) scale(0.96);
+
+    width: calc(100% - 28px);
+    max-width: 390px;
+
+    background: linear-gradient(180deg, rgba(22, 22, 30, 0.98), rgba(14, 14, 20, 0.98));
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-radius: 28px;
+
+    padding: 18px;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+
+    z-index: 1200;
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.28s ease,
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.28s;
+}
+
+.persona-panel.active {
+    display: block;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateX(-50%) translateY(0) scale(1);
+
+    pointer-events: auto;
+}
+
+.persona-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.persona-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.persona-close {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: white;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+}
+
+.persona-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.persona-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.persona-group label {
+    font-size: 0.9rem;
+
+    color: var(--text-muted);
+}
+
+.persona-content select {
+    width: 100%;
+
+    height: 58px;
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: white;
+
+    padding: 0 18px;
+
+    font-size: 1rem;
+
+    outline: none;
+
+    appearance: none;
+
+    background-image: url("https://i.ibb.co.com/0jJ8NbFH/up.png");
+
+    background-repeat: no-repeat;
+
+    background-position: right 18px center;
+
+    background-size: 13px;
+
+    transition:
+        border-color 0.25s ease,
+        transform 0.18s ease;
+}
+
+.persona-content select:focus {
+    border-color: var(--primary-color);
+}
+
+/* =========================
+   SLIDER
+========================= */
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+}
+
+.slider-value {
+    color: var(--primary-hover);
+
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.persona-slider {
+    width: 100%;
+
+    appearance: none;
+
+    height: 6px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    outline: none;
+}
+
+.persona-slider::-webkit-slider-thumb {
+    appearance: none;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: var(--primary-color);
+
+    cursor: pointer;
+
+    border: none;
+}
+
+/* =========================
+   PRESET
+========================= */
+
+.preset-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 10px;
+}
+
+.preset-btn {
+    border: none;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    color: white;
+
+    border-radius: 18px;
+
+    padding: 14px;
+
+    font-size: 0.92rem;
+
+    cursor: pointer;
+
+    transition: 0.22s ease;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.preset-btn.active {
+    background: linear-gradient(135deg, #1f8fff, #0d6efd);
+
+    border-color: rgba(80, 160, 255, 0.8);
+
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.35);
+
+    color: white;
+
+    transform: translateY(-2px);
+}
+
+/* =========================
+   ROTATE ICON
+========================= */
+
+.model-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: transform 0.28s ease;
+}
+
+.model-arrow img {
+    width: 13px;
+    height: 13px;
+
+    object-fit: contain;
+
+    filter: brightness(0) invert(1);
+}
+
+.model-arrow.rotate {
+    transform: rotate(180deg);
+}
+
+/* =========================
+   CUSTOM DROPDOWN
+========================= */
+
+.custom-select {
+    position: relative;
+}
+
+.custom-select-trigger {
+    width: 100%;
+    height: 58px;
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: white;
+
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 1rem;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.custom-select-trigger:active {
+    transform: scale(0.98);
+}
+
+.dropdown-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: transform 0.28s ease;
+}
+
+.dropdown-arrow img {
+    width: 13px;
+    height: 13px;
+
+    object-fit: contain;
+
+    filter: brightness(0) invert(1);
+}
+
+.custom-select.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-options {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    left: 0;
+
+    width: 100%;
+
+    background: rgba(18, 18, 24, 0.98);
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-10px);
+
+    transition: 0.25s ease;
+
+    z-index: 20;
+}
+
+.custom-select.active .custom-options {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
+
+.custom-options div {
+    padding: 15px 18px;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.custom-options div:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+   PERSONA ACTIONS
+========================= */
+
+.persona-actions {
+    margin-top: 20px;
+
+    display: flex;
+    justify-content: flex-end;
+}
+
+.persona-save-btn {
+    width: 100%;
+
+    height: 52px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: linear-gradient(135deg, #1f8fff, #0d6efd);
+
+    color: white;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.25);
+}
+
+.persona-save-btn:hover {
+    transform: translateY(-1px);
+}
+
+.persona-save-btn:active {
+    transform: scale(0.98);
+}
+
+.bot-message-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.ai-profile-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    top: -5px;
+    position: relative;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+        0 0 10px rgba(0,0,0,0.25);
+}
+
+/* =========================
+   SETTINGS MENU
+========================= */
+
+.settings-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.settings-menu-btn {
+    width: 100%;
+    border: none;
+    border-radius: 18px;
+
+    padding: 20px;
+
+    background:
+        rgba(255,255,255,0.04);
+
+    color: white;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    border:
+        1px solid rgba(255,255,255,0.06);
+
+    transition: 0.25s;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.settings-menu-btn:hover {
+
+    background:
+        rgba(255,255,255,0.08);
+
+    border-color:
+        rgba(30,144,255,0.45);
+}
+
+.settings-menu-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* =========================
+   PROFILE PANEL
+========================= */
+
+.profile-upload-area {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 20px 0;
+}
+
+.profile-preview {
+
+    width: 120px;
+    height: 120px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border:
+        3px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 0 25px rgba(30,144,255,0.2);
+}
+
+.upload-profile-btn {
+
+    border: none;
+
+    padding: 14px 22px;
+
+    border-radius: 14px;
+
+    background: var(--primary-color);
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.upload-profile-btn:hover {
+
+    background:
+        var(--primary-hover);
+}
+
+.delete-profile-btn{
+    width:100%;
+    height:55px;
+    border:none;
+    border-radius:18px;
+    margin-top:14px;
+    background:#1a1a25;
+    color:#ff4d4d;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.delete-profile-btn:hover{
+    background:#2a1a1a;
+}
+
+/* =========================
+   INTERSTITIAL ADS
+========================= */
+
+.custom-ad-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.75);
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    backdrop-filter: blur(4px);
+}
+
+.custom-ad-box {
+
+    position: relative;
+
+    width: 100%;
+
+    max-width: 380px;
+
+    min-height: 280px;
+
+    background: #111;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.close-ad-btn {
+
+    position: absolute;
+
+    top: 10px;
+
+    right: 12px;
+
+    width: 35px;
+
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    z-index: 10;
+}
+
+.ads-container {
+    width: 100%;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: transparent;
+}
+
+/* =========================
+   INTERSTITIAL ADS
+========================= */
+
+.interstitial-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(6px);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 99999;
+}
+
+.interstitial-box {
+    width: 90%;
+    max-width: 380px;
+
+    min-height: 420px;
+
+    background: #0f0f13;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 24px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 20px;
+}
+
+.ad-content {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-ad-btn {
+    position: absolute;
+
+    top: 14px;
+    right: 14px;
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    display: none; /* AWALNYA DISEMBUNYIKAN */
+}
+
+.ad-timer {
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+
+    color: white;
+
+    font-size: 0.9rem;
+
+    opacity: 0.8;
+}

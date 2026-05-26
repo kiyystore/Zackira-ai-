@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3058831150053327"
+     crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0d0d" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>Zackira AI</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/images/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/images/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      marked.setOptions({ breaks: true, gfm: true });
+    </script>
+  </head>
+  <body>
+    <div id="confirmModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Hapus Riwayat ini?</h3>
+        <p>Tindakan ini akan menghapus riwayat obrolan secara permanen.</p>
+        <div class="modal-actions">
+          <button id="cancelDelete" class="btn-secondary">BATALKAN</button>
+          <button id="confirmDelete" class="btn-danger">OK</button>
+        </div>
+      </div>
+    </div>
+    <div id="alertModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3 id="alertTitle">Model Terkunci</h3>
+        <p id="alertMessage"></p>
+        <div class="modal-actions">
+          <button
+            onclick="closeCustomAlert()"
+            class="btn-danger"
+            style="width: 100%"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="sidebar-overlay"
+      id="sidebarOverlay"
+      onclick="toggleSidebar()"
+    ></div>
+
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <button class="about-btn" onclick="window.location.href=#">
+            <img src="/images/android-chrome-512x512.png" class="sidebar-logo" />
+          </button>
+
+          <h2>Menu Utama</h2>
+        </div>
+
+        <button class="close-btn" onclick="toggleSidebar()">×</button>
+      </div>
+      <div class="sidebar-menu">
+        <button class="menu-btn" onclick="handleAuth()">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+            class="menu-icon"
+            alt="Login"
+          />
+          <span id="loginText">Login dengan Google</span>
+        </button>
+        <button class="menu-btn" onclick="toggleInfoPanel()">
+          <img
+            src="https://i.ibb.co.com/ym1P0Rj7/informaiton.png"
+            class="menu-icon"
+            alt="Info"
+          />
+          Informasi tentang Zackira
+        </button>
+
+        <button class="menu-btn" onclick="newConversation()">
+          <img
+            src="https://i.ibb.co.com/9mz2L75S/pen.png"
+            class="menu-icon"
+            alt="New"
+          />
+          Obrolan Baru
+        </button>
+        <button
+          class="menu-btn"
+          id="toggleSearchBtn"
+          onclick="toggleSearchBar()"
+        >
+          <img
+            src="https://i.ibb.co.com/gbLQ8VdM/search.png"
+            class="menu-icon"
+            alt="Search"
+          />
+          Telusuri riwayat
+        </button>
+
+        <div class="search-container" id="searchContainer">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Masukkan nama riwayat..."
+            oninput="filterHistory()"
+          />
+          <button class="close-search-btn" onclick="toggleSearchBar()">
+            &times;
+          </button>
+        </div>
+
+        <div class="info-panel" id="infoPanel">
+          <div class="info-panel-header">
+            <h3>Tentang Zackira AI</h3>
+            <button onclick="toggleInfoPanel()">&times;</button>
+          </div>
+
+          <div class="info-panel-content">
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Apa itu Zackira AI?</span>
+
+                <img
+                  src="https://i.ibb.co.com/QjvybdZg/plus.png"
+                  class="faq-icon"
+                  alt="plus"
+                />
+              </button>
+
+              <div class="faq-answer">
+                Zackira AI adalah asisten AI modern berbasis Web yang dirancang
+                untuk membantu pengguna dalam berbagai kebutuhan seperti coding,
+                penyelesaian masalah, atau sekedar menjadi teman ngobrol.
+                Zackira masih dalam tahap pengembangan agar mendukung berbagai
+                hal seperti pembuatan gambar, video, musik, membaca file gambar,
+                audio, video, dan lain-lain. Untuk saat ini hanya mendukung
+                input teks.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Apakah Semua ini gratis?</span>
+
+                <img
+                  src="https://i.ibb.co.com/QjvybdZg/plus.png"
+                  class="faq-icon"
+                  alt="plus"
+                />
+              </button>
+
+              <div class="faq-answer">
+                Ya, tapi hanya untuk model ZackAi. Sisanya telah di beri limit
+                penggunaan tertentu yang akan otomatis terkunci saat limit sudah habis. Model yang terkunci bisa terbuka lagi jika waktu penguncian nya selesai.
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" onclick="toggleFaq(this)">
+                <span>Bagaimana keamanan privasi nya?</span>
+
+                <img
+                  src="https://i.ibb.co.com/QjvybdZg/plus.png"
+                  class="faq-icon"
+                  alt="plus"
+                />
+              </button>
+
+              <div class="faq-answer">
+                Tenang saja, karena untuk privasi seperti riwayat obrolan maupun pengaturan ai,
+                semua telah tersimpan secara otomatis pada masing-masing perangkat setiap pengguna (Individual).
+                Jadi baik itu orang lain atau bahkan creator sendiri tidak akan bisa melihat riwayat kamu di web ini.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <h3>RIWAYAT OBROLAN</h3>
+        <div id="historyList"></div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="social-icons">
+          <a
+            href="https://discord.gg/Waj4GRQMc"
+            target="_blank"
+            class="social-link discord"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png"
+              alt="Discord"
+            />
+          </a>
+          <a
+            href="https://t.me/Zackultra21"
+            target="_blank"
+            class="social-link telegram"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"
+              alt="Telegram"
+            />
+          </a>
+          <a
+            href="https://wa.me/6289606860329"
+            target="_blank"
+            class="social-link whatsapp"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
+              alt="WhatsApp"
+            />
+          </a>
+        </div>
+        <p class="version-text">© <span id="currentYear">2026</span> Zack.</p>
+        <p class="copyright-text">All rights reserved.</p>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <header>
+        <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
+        <div class="header-title">
+          <h1>Zackira <span>AI</span></h1>
+          <p>Asisten Cerdas Pribadimu</p>
+        </div>
+      </header>
+
+      <div class="chat-box" id="chatBox">
+        <div
+          class="loading-container"
+          id="loadingIndicator"
+          style="display: none"
+        >
+          <div class="loading-orbit">
+            <div class="orbit-ring"></div>
+
+            <img
+              src="/images/android-chrome-512x512.png"
+              class="loading-logo"
+              alt="Zackira AI"
+            />
+          </div>
+
+          <span id="loadingText">Menganalisis...</span>
+        </div>
+      </div>
+      <div class="input-area">
+        <div class="input-wrapper">
+          <!-- TEXTAREA -->
+          <textarea
+            id="userInput"
+            placeholder="Minta Zackira..."
+            autocomplete="off"
+          ></textarea>
+
+          <!-- ACTION ROW -->
+          <div class="input-bottom-row">
+            <!-- LEFT -->
+            <div class="left-actions">
+              <button class="persona-btn" onclick="openSettingsMenu()">
+                <img
+                  src="https://i.ibb.co.com/bj5XpRsx/settings.png"
+                  alt="Persona"
+                />
+              </button>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="right-actions">
+              <button class="model-trigger" onclick="openModelSheet()">
+                <span id="currentModelDisplay"> Pilih model </span>
+
+                <span class="chevron-up">
+                  <img src="https://i.ibb.co.com/0jJ8NbFH/up.png" />
+                </span>
+              </button>
+
+              <button class="send-btn" onclick="sendMessage()">
+                <img
+                  src="https://i.ibb.co.com/JWLFkL8R/send-1.png"
+                  alt="Send"
+                  class="send-icon"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="modelSheetOverlay"
+      class="sheet-overlay"
+      onclick="closeModelSheet()"
+    >
+      <div class="bottom-sheet" onclick="event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header"><h2>Pilih Model AI</h2></div>
+        <div class="sheet-body">
+          <div
+            class="model-option"
+            onclick="
+              selectModel(
+                'llama-3.1-8b-instant',
+                'ZackAi',
+                'Teman terbaik untuk mengobrol tanpa batas.',
+              )
+            "
+          >
+            <div class="option-info">
+              <span class="option-title">ZackAi</span
+              ><span class="option-desc"
+                >Teman terbaik untuk mengobrol tanpa batas.</span
+              >
+            </div>
+            <div class="checkmark">
+              <img
+                src="https://i.ibb.co.com/TnxTrmq/accept-1.png"
+                alt="selected"
+              />
+            </div>
+          </div>
+          <div
+            class="model-option"
+            onclick="
+              selectModel(
+                'openai/gpt-oss-120b',
+                'GPT',
+                'Mampu menangani masalah kompleks seperti coding dan matematika tingkat lanjut. Di dukung oleh gpt oss.',
+              )
+            "
+          >
+            <div class="option-info">
+              <span class="option-title">GPT</span
+              ><span class="option-desc"
+                >Mampu menangani masalah kompleks seperti coding dan matematika
+                tingkat lanjut. Di dukung oleh gpt oss</span
+              >
+            </div>
+            <div class="checkmark">
+              <img
+                src="https://i.ibb.co.com/TnxTrmq/accept-1.png"
+                alt="selected"
+              />
+            </div>
+          </div>
+          <div
+            class="model-option"
+            onclick="
+              selectModel(
+                'llama-3.3-70b-versatile',
+                'Llama',
+                'Handal dalam penalaran dan pemecahan masalah yang rumit.',
+              )
+            "
+          >
+            <div class="option-info">
+              <span class="option-title">Llama</span
+              ><span class="option-desc"
+                >Handal dalam penalaran dan pemecahan masalah yang rumit.</span
+              >
+            </div>
+            <div class="checkmark">
+              <img
+                src="https://i.ibb.co.com/TnxTrmq/accept-1.png"
+                alt="selected"
+              />
+            </div>
+          </div>
+          <div
+            class="model-option"
+            onclick="
+              selectModel(
+                'qwen/qwen3-32b',
+                'Qwen',
+                'Sangat handal dalam pemecahan masalah yang sangat kompleks dengan kecepatan tinggi (model ini akan membalas secara default menggunakan bahasa inggris). Di dukung oleh qwen3',
+              )
+            "
+          >
+            <div class="option-info">
+              <span class="option-title">Qwen</span
+              ><span class="option-desc"
+                >Sangat handal dalam pemecahan masalah yang sangat kompleks dan
+                rinci dengan kecepatan tinggi (model ini akan membalas secara
+                default menggunakan bahasa inggris). Di dukung oleh qwen3</span
+              >
+            </div>
+            <div class="checkmark">
+              <img
+                src="https://i.ibb.co.com/TnxTrmq/accept-1.png"
+                alt="selected"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS MENU -->
+    <div id="settingsMenuPanel" class="persona-panel">
+      <div class="persona-header">
+        <h3>Pengaturan</h3>
+
+        <button class="persona-close" onclick="closeSettingsMenu()">✕</button>
+      </div>
+
+      <div class="persona-content settings-menu-content">
+        <button class="settings-menu-btn" onclick="openPersonaPanel()">
+          <img
+            src="https://i.ibb.co.com/TDnpg90d/settings-1.png"
+            class="settings-menu-icon"
+          />
+
+          <span>Pengaturan Respon</span>
+        </button>
+
+        <button class="settings-menu-btn" onclick="openProfilePanel()">
+          <img
+            src="https://i.ibb.co.com/8gB0SJK1/change.png"
+            class="settings-menu-icon"
+          />
+
+          <span>Ubah Foto Profil AI</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PERSONA PANEL -->
+    <div id="personaPanel" class="persona-panel">
+      <div class="persona-header">
+        <h3>Atur Gaya Respon AI</h3>
+
+        <button class="persona-close" onclick="closePersonaPanel()">✕</button>
+      </div>
+
+      <div class="persona-content">
+        <!-- Nada -->
+        <div class="custom-select" id="toneDropdown">
+          <button
+            class="custom-select-trigger"
+            onclick="toggleDropdown('toneDropdown')"
+          >
+            <span id="toneSelected"> Formal </span>
+
+            <span class="dropdown-arrow">
+              <img
+                src="https://i.ibb.co.com/bR8g20h6/arrow-down-sign-to-navigate.png"
+              />
+            </span>
+          </button>
+
+          <div class="custom-options">
+            <div
+              onclick="selectOption('toneDropdown', 'toneSelected', 'Santai')"
+            >
+              Santai
+            </div>
+
+            <div
+              onclick="selectOption('toneDropdown', 'toneSelected', 'Formal')"
+            >
+              Formal
+            </div>
+
+            <div
+              onclick="selectOption('toneDropdown', 'toneSelected', 'Humoris')"
+            >
+              Humoris
+            </div>
+
+            <div
+              onclick="selectOption('toneDropdown', 'toneSelected', 'Lembut')"
+            >
+              Lembut
+            </div>
+
+            <div
+              onclick="selectOption('toneDropdown', 'toneSelected', 'Tegas')"
+            >
+              Tegas
+            </div>
+          </div>
+        </div>
+
+        <!-- Sifat -->
+        <div class="custom-select" id="personalityDropdown">
+          <button
+            class="custom-select-trigger"
+            onclick="toggleDropdown('personalityDropdown')"
+          >
+            <span id="personalitySelected"> Cerdas </span>
+
+            <span class="dropdown-arrow">
+              <img
+                src="https://i.ibb.co.com/bR8g20h6/arrow-down-sign-to-navigate.png"
+              />
+            </span>
+          </button>
+
+          <div class="custom-options">
+            <div
+              onclick="
+                selectOption(
+                  'personalityDropdown',
+                  'personalitySelected',
+                  'Ramah',
+                )
+              "
+            >
+              Ramah
+            </div>
+
+            <div
+              onclick="
+                selectOption(
+                  'personalityDropdown',
+                  'personalitySelected',
+                  'Cerdas',
+                )
+              "
+            >
+              Cerdas
+            </div>
+
+            <div
+              onclick="
+                selectOption(
+                  'personalityDropdown',
+                  'personalitySelected',
+                  'Supportif',
+                )
+              "
+            >
+              Supportif
+            </div>
+
+            <div
+              onclick="
+                selectOption(
+                  'personalityDropdown',
+                  'personalitySelected',
+                  'Serius',
+                )
+              "
+            >
+              Serius
+            </div>
+
+            <div
+              onclick="
+                selectOption(
+                  'personalityDropdown',
+                  'personalitySelected',
+                  'Ekspresif',
+                )
+              "
+            >
+              Ekspresif
+            </div>
+          </div>
+        </div>
+
+        <!-- Humor -->
+        <div class="persona-group">
+          <div class="slider-row">
+            <label>Tingkat Humor</label>
+
+            <span class="slider-value" id="humorValue"> 50% </span>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            id="humorSlider"
+            class="persona-slider"
+          />
+        </div>
+
+        <!-- PRESET -->
+        <div class="persona-group">
+          <label>Preset Cepat</label>
+
+          <div class="preset-grid">
+            <button class="preset-btn" onclick="applyPreset('pacar', this)">
+              💕 Pacar AI
+            </button>
+
+            <button class="preset-btn" onclick="applyPreset('guru', this)">
+              🎓 Guru
+            </button>
+
+            <button class="preset-btn" onclick="applyPreset('teman', this)">
+              😎 Teman Santai
+            </button>
+
+            <button
+              class="preset-btn"
+              onclick="applyPreset('programmer', this)"
+            >
+              👨‍💻 Programmer
+            </button>
+          </div>
+          <div class="persona-actions">
+            <button class="persona-save-btn" onclick="confirmPersonaSettings()">
+              Simpan Pengaturan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE PANEL -->
+    <div id="profilePanel" class="persona-panel">
+      <div class="persona-header">
+        <h3>Ubah Foto Profil AI</h3>
+
+        <button class="persona-close" onclick="closeProfilePanel()">✕</button>
+      </div>
+
+      <div class="persona-content">
+        <div class="profile-upload-area">
+          <img
+            id="profilePreview"
+            src="https://i.ibb.co.com/ZRXdPw3h/profile-picture.png"
+            class="profile-preview"
+          />
+
+          <input
+            type="file"
+            id="profileInput"
+            accept="image/*"
+            onchange="handleProfileUpload(event)"
+            hidden
+          />
+
+          <button
+            class="upload-profile-btn"
+            onclick="document.getElementById('profileInput').click()"
+          >
+            Pilih Foto
+          </button>
+
+          <button
+            class="delete-profile-btn"
+            id="deleteProfileBtn"
+            onclick="deleteProfileImage()"
+            style="display: none"
+          >
+            Hapus Foto
+          </button>
+        </div>
+
+        <button class="persona-save-btn" onclick="saveProfileImage()">
+          Simpan Pengaturan
+        </button>
+      </div>
+    </div>
+    
+    <!-- INTERSTITIAL AD -->
+<div id="interstitialAd" class="interstitial-overlay">
+    <div class="interstitial-box">
+
+        <!-- TIMER -->
+        <div id="adTimer" class="ad-timer">
+            Iklan akan selesai dalam 5 detik
+        </div>
+
+        <!-- TOMBOL CLOSE -->
+        <button id="closeAdBtn" class="close-ad-btn">
+            ✕
+        </button>
+
+        <!-- ISI IKLAN -->
+        <div class="ad-content">
+
+            <!-- Google Adsense -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3058831150053327"
+                 data-ad-slot="1234567890"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+
+        </div>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
